@@ -34,6 +34,23 @@ export default () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#000000' }}>
       <StatusBar hidden />
+      <FlatList
+        data={data}
+        horizontal
+        pagingEnabled
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({ item }) => {
+          return (
+            <View style={{ width }}>
+              <Image
+                source={{ uri: item }}
+                style={{ width: imageW, height: imageH, resizeMode: 'cover' }}
+              />
+            </View>
+          )
+        }
+        }
+      />
     </View>
   )
 };
