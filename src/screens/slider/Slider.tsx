@@ -1,20 +1,14 @@
-// Inspiration: https://dribbble.com/shots/14139308-Simple-Scroll-Animation
-// Illustrations by: SAMji https://dribbble.com/SAMji_illustrator
-
 import * as React from 'react'
 import {
   StatusBar,
-  FlatList,
   Image,
   Animated,
-  Text,
   View,
   Dimensions,
-  StyleSheet,
-  TouchableOpacity
+  StyleSheet
 }                 from 'react-native'
 
-const { width, height } = Dimensions.get('screen')
+const { width } = Dimensions.get('screen')
 
 const data = [
   'https://cdn.dribbble.com/users/3281732/screenshots/11192830/media/7690704fa8f0566d572a085637dd1eee.jpg?compress=1&resize=1200x1200',
@@ -31,20 +25,53 @@ const imageW = width * 0.7
 const imageH = imageW * 1.54
 
 export default () => {
+
+  const scrollX = React.useRef(new Animated.Value(0)).current
+
   return (
     <View style={{ flex: 1, backgroundColor: '#000000' }}>
       <StatusBar hidden />
-      <FlatList
+      <View style={StyleSheet.absoluteFillObject}>
+        {
+          data.map((item, index) => {
+
+            const inputRange = [
+              (index - 1) * width,
+              index * width,
+              (index + 1) * width
+            ]
+
+            const opacity = scrollX.interpolate({
+              inputRange,
+              outputRange: [0, 1, 0]
+            })
+
+            return (
+              <Animated.Image
+                key={index + '-image'}
+                source={{ uri: item }}
+                style={[StyleSheet.absoluteFillObject, { opacity }]}
+                blurRadius={50}
+              />
+            )
+          })
+        }
+      </View>
+      <Animated.FlatList
         data={data}
         horizontal
         pagingEnabled
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: true }
+        )}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => {
           return (
-            <View style={{ width }}>
+            <View style={{ width, alignItems: 'center', justifyContent: 'center' }}>
               <Image
                 source={{ uri: item }}
-                style={{ width: imageW, height: imageH, resizeMode: 'cover' }}
+                style={{ width: imageW, height: imageH, resizeMode: 'cover', borderRadius: 16 }}
               />
             </View>
           )
